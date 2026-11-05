@@ -1,0 +1,51 @@
+---
+import ProjectCard from '../../components/projects/ProjectCard.astro';
+import PageHero from '../../components/ui/PageHero.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublishedProjects } from '../../utils/content';
+
+const projects = await getPublishedProjects();
+---
+
+<BaseLayout
+  title="Proyectos"
+  description="Proyectos de desarrollo de software de Johnatan Lozano documentados con arquitectura real, funcionalidades verificadas, repositorios y limitaciones técnicas."
+>
+  <PageHero
+    eyebrow="Portafolio de ingeniería"
+    title="Proyectos documentados como estudios de caso"
+    lead="Presentación transparente de aplicaciones académicas y personales: arquitectura por capas, contratos REST, decisiones técnicas y alcance real verificado."
+  />
+
+  <section class="section">
+    <div class="container">
+      {
+        projects.length > 0 ? (
+          <div class="projects-catalog">
+            {projects.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+        ) : (
+          <div class="card">
+            <p>Actualmente se están preparando las fichas técnicas de proyectos para publicación.</p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .projects-catalog {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 900px) {
+    .projects-catalog {
+      grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+    }
+  }
+</style>
+

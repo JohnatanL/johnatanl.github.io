@@ -1,0 +1,199 @@
+---
+import { siteConfig } from '../../data/site';
+import { hasConfirmedUrl, isPending, withBase } from '../../utils/paths';
+import AvailabilityPill from '../ui/AvailabilityPill.astro';
+import PendingBadge from '../ui/PendingBadge.astro';
+
+const emailConfirmed = !isPending(siteConfig.social.email.value);
+const githubConfirmed = hasConfirmedUrl(siteConfig.social.github.url);
+const linkedinConfirmed = hasConfirmedUrl(siteConfig.social.linkedin.url);
+---
+
+<div class="contact-grid">
+  <section class="contact-card card" aria-labelledby="contacto-disponibilidad">
+    <AvailabilityPill variant="light" />
+    <h2 id="contacto-disponibilidad" class="contact-card__title">
+      Disponibilidad y ubicación
+    </h2>
+    <p class="contact-card__desc">{siteConfig.availability.detail}</p>
+
+    <dl class="contact-card__meta">
+      <div>
+        <dt>Ubicación general</dt>
+        <dd>{siteConfig.author.location} (sin publicación de dirección ni teléfono personal)</dd>
+      </div>
+      <div>
+        <dt>Formación actual</dt>
+        <dd>{siteConfig.author.fullRole} — {siteConfig.author.institution}</dd>
+      </div>
+      <div>
+        <dt>Hoja de vida</dt>
+        <dd>
+          {
+            siteConfig.cv.isAvailable ? (
+              <a class="btn btn--primary" href={withBase(siteConfig.cv.filePath)} download>
+                {siteConfig.cv.label}
+              </a>
+            ) : (
+              <PendingBadge label={siteConfig.cv.pendingLabel} />
+            )
+          }
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="contact-card card" aria-labelledby="contacto-canales">
+    <h2 id="contacto-canales" class="contact-card__title">Canales profesionales</h2>
+    <p class="contact-card__desc">
+      Enlaces directos verificados sin formularios con backend ni captura innecesaria de datos.
+    </p>
+
+    <ul class="channel-list">
+      <li class="channel-item">
+        <div>
+          <h3>GitHub</h3>
+          <p>Repositorios públicos de código fuente y proyectos académicos.</p>
+        </div>
+        {
+          githubConfirmed ? (
+            <a
+              class="btn btn--primary"
+              href={siteConfig.social.github.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Visitar {siteConfig.social.github.handle}
+            </a>
+          ) : (
+            <PendingBadge label="En actualización" />
+          )
+        }
+      </li>
+
+      <li class="channel-item">
+        <div>
+          <h3>LinkedIn</h3>
+          <p>Perfil profesional para networking y seguimiento de trayectoria.</p>
+        </div>
+        {
+          linkedinConfirmed ? (
+            <a
+              class="btn btn--secondary"
+              href={siteConfig.social.linkedin.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Abrir perfil en LinkedIn
+            </a>
+          ) : (
+            <PendingBadge label="Pendiente de enlazar" />
+          )
+        }
+      </li>
+
+      <li class="channel-item">
+        <div>
+          <h3>Correo electrónico</h3>
+          <p>Contacto directo para oportunidades de práctica o desarrollo.</p>
+        </div>
+        {
+          emailConfirmed ? (
+            <a class="btn btn--secondary" href={`mailto:${siteConfig.social.email.value}`}>
+              {siteConfig.social.email.value}
+            </a>
+          ) : (
+            <PendingBadge label="En actualización" />
+          )
+        }
+      </li>
+    </ul>
+  </section>
+</div>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 880px) {
+    .contact-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    }
+  }
+
+  .contact-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .contact-card__title {
+    font-size: var(--text-xl);
+  }
+
+  .contact-card__desc {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .contact-card__meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+
+  .contact-card__meta dt {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .contact-card__meta dd {
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+  }
+
+  .channel-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .channel-item {
+    min-width: 0;
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-body);
+    border: 1px solid var(--color-border-light);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .channel-item > div {
+    min-width: 0;
+  }
+
+  .channel-item h3 {
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+  }
+
+  .channel-item p {
+    margin-top: 0.15rem;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+</style>
+

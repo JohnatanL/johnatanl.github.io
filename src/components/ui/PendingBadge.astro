@@ -1,0 +1,26 @@
+---
+interface Props {
+  label?: string | undefined;
+}
+
+const { label = 'Pendiente de publicación' } = Astro.props;
+---
+
+<span class="pending-badge">{label}</span>
+
+<style>
+  .pending-badge {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 0.25rem 0.65rem;
+    border-radius: 1rem;
+    background-color: var(--color-neutral-bg);
+    border: 1px solid var(--color-neutral-border);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    line-height: 1.35;
+  }
+</style>
+

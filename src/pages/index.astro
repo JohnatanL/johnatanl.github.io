@@ -1,0 +1,187 @@
+---
+import ContactCard from '../components/contact/ContactCard.astro';
+import EducationItem from '../components/education/EducationItem.astro';
+import ProjectCard from '../components/projects/ProjectCard.astro';
+import HeroBand from '../components/ui/HeroBand.astro';
+import SectionHeader from '../components/ui/SectionHeader.astro';
+import StatusBadge from '../components/ui/StatusBadge.astro';
+import { skillCategories } from '../data/skills';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  getFeaturedProjects,
+  getPublishedEducation,
+} from '../utils/content';
+import { SKILL_CONTEXT_META } from '../utils/format';
+import { withBase } from '../utils/paths';
+
+const featuredProjects = await getFeaturedProjects();
+const educationEntries = await getPublishedEducation();
+---
+
+<BaseLayout>
+  <HeroBand />
+
+  {
+    featuredProjects.length > 0 && (
+      <section class="section">
+        <div class="container">
+          <SectionHeader
+            eyebrow="Proyectos documentados"
+            title="Casos de estudio con arquitectura verificable"
+            description="Cada proyecto documenta el stack real utilizado, la comunicación entre capas, las funcionalidades operativas y sus limitaciones actuales."
+            actionHref={withBase('/proyectos/')}
+            actionLabel="Ver todos los proyectos"
+          />
+
+          <div class="projects-grid">
+            {featuredProjects.map((project) => (
+              <ProjectCard project={project} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section section--alt">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Competencias técnicas"
+        title="Habilidades organizadas por contexto real de uso"
+        description="Clasificación objetiva basada en tecnologías aplicadas en proyectos verificables y áreas actualmente en proceso formativo, sin porcentajes arbitrarios."
+        actionHref={withBase('/habilidades/')}
+        actionLabel="Explorar catálogo completo"
+      />
+
+      <div class="skills-overview-grid">
+        {
+          skillCategories.map((cat) => (
+            <article class="card skill-summary-card">
+              <h3>{cat.title}</h3>
+              <p class="skill-summary-card__desc">{cat.summary}</p>
+              <ul class="skill-summary-card__list">
+                {cat.skills.map((skill) => {
+                  const meta = SKILL_CONTEXT_META[skill.context];
+                  return (
+                    <li>
+                      <span class="skill-summary-card__name">{skill.name}</span>
+                      <StatusBadge label={meta.label} tone={meta.tone} />
+                    </li>
+                  );
+                })}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    educationEntries.length > 0 && (
+      <section class="section">
+        <div class="container">
+          <SectionHeader
+            eyebrow="Trayectoria formativa"
+            title="Formación técnica en desarrollo de software"
+            description="Formación orientada al ciclo completo de construcción, integración y documentación de aplicaciones."
+            actionHref={withBase('/formacion/')}
+            actionLabel="Ver detalle de formación"
+          />
+
+          <div class="education-stack">
+            {educationEntries.slice(0, 2).map((entry) => (
+              <EducationItem entry={entry} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section section--alt">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Contacto directo"
+        title="Conversemos sobre oportunidades formativas o de desarrollo"
+        description="Canales profesionales verificados y estado actual de disponibilidad en Colombia."
+      />
+      <ContactCard />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .projects-grid {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 900px) {
+    .projects-grid {
+      grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+    }
+  }
+
+  .skills-overview-grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 760px) {
+    .skills-overview-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1120px) {
+    .skills-overview-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .skill-summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .skill-summary-card h3 {
+    font-size: var(--text-lg);
+  }
+
+  .skill-summary-card__desc {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .skill-summary-card__list {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-2);
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .skill-summary-card__list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border-light);
+    font-size: var(--text-sm);
+  }
+
+  .skill-summary-card__name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .education-stack {
+    display: grid;
+    gap: var(--space-5);
+  }
+</style>
+

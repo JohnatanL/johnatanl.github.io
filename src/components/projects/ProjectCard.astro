@@ -1,0 +1,156 @@
+---
+import { Image, Picture } from 'astro:assets';
+import type { ProjectEntry } from '../../utils/content';
+import { PROJECT_STATUS_META, formatVerifiedDate } from '../../utils/format';
+import { hasConfirmedUrl, withBase } from '../../utils/paths';
+import StatusBadge from '../ui/StatusBadge.astro';
+
+interface Props {
+  project: ProjectEntry;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const statusMeta = PROJECT_STATUS_META[data.status];
+const projectUrl = withBase(`/proyectos/${project.id}/`);
+const publicRepos = data.repositories.filter(
+  (repo) => repo.visibility === 'publico' && hasConfirmedUrl(repo.url)
+);
+const updatedText = formatVerifiedDate(data.updatedAt ?? data.createdAt);
+---
+
+<article class="project-card card">
+  {
+    data.coverImage && data.coverAlt && (
+      <a class="project-card__media" href={projectUrl} tabindex="-1" aria-hidden="true">
+        {data.coverImage.format === 'svg' ? (
+          <Image src={data.coverImage} alt={data.coverAlt} loading="lazy" />
+        ) : (
+          <Picture
+            src={data.coverImage}
+            formats={['avif', 'webp']}
+            widths={[480, 800]}
+            sizes="(min-width: 960px) 460px, 100vw"
+            alt={data.coverAlt}
+            loading="lazy"
+          />
+        )}
+      </a>
+    )
+  }
+
+  <div class="project-card__body">
+    <div class="project-card__meta">
+      <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
+      {updatedText && <span class="project-card__date">{updatedText}</span>}
+    </div>
+
+    <h3 class="project-card__title">
+      <a href={projectUrl}>{data.title}</a>
+    </h3>
+
+    <p class="project-card__summary">{data.summary}</p>
+
+    <ul class="tag-list project-card__tags" aria-label={`Tecnologías de ${data.title}`}>
+      {data.technologies.slice(0, 8).map((tech) => <li class="tag">{tech}</li>)}
+    </ul>
+
+    <div class="project-card__actions">
+      <a class="btn btn--primary" href={projectUrl}>
+        Ver estudio de caso
+      </a>
+      {
+        publicRepos.map((repo) => (
+          <a
+            class="btn btn--secondary"
+            href={repo.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {repo.label}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+    transition:
+      border-color var(--transition-base),
+      box-shadow var(--transition-base);
+  }
+
+  .project-card:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .project-card__media {
+    display: block;
+    background-color: var(--color-navy-900);
+    border-bottom: 1px solid var(--color-border-light);
+    padding: var(--space-4);
+  }
+
+  .project-card__media :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+  }
+
+  .project-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: var(--space-6);
+    gap: var(--space-4);
+  }
+
+  .project-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .project-card__date {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono, monospace);
+  }
+
+  .project-card__title {
+    font-size: var(--text-xl);
+  }
+
+  .project-card__title a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+
+  .project-card__title a:hover {
+    color: var(--color-accent-blue);
+    text-decoration: underline;
+  }
+
+  .project-card__summary {
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  .project-card__actions {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+</style>
+

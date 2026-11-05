@@ -1,0 +1,35 @@
+---
+interface Props {
+  targetId?: string | undefined;
+}
+
+const { targetId = 'contenido-principal' } = Astro.props;
+---
+
+<a class="skip-link" href={`#${targetId}`}>Saltar al contenido principal</a>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 1000;
+    padding: 0.65rem 1.1rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-accent-cyan);
+    color: var(--color-navy-950);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    text-decoration: none;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    transform: translateY(0);
+    outline: 3px solid #ffffff;
+    outline-offset: 2px;
+  }
+</style>
+

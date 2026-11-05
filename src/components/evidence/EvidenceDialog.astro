@@ -1,0 +1,113 @@
+---
+import { Image, Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  dialogId: string;
+  title: string;
+  caption: string;
+  image: ImageMetadata;
+  alt: string;
+}
+
+const { dialogId, title, caption, image, alt } = Astro.props;
+---
+
+<dialog id={dialogId} class="evidence-dialog" aria-labelledby={`${dialogId}-title`}>
+  <div class="evidence-dialog__surface">
+    <header class="evidence-dialog__header">
+      <h3 id={`${dialogId}-title`} class="evidence-dialog__title">{title}</h3>
+      <button
+        type="button"
+        class="btn btn--secondary evidence-dialog__close"
+        data-dialog-close
+        aria-label={`Cerrar vista ampliada de ${title}`}
+      >
+        Cerrar (Esc)
+      </button>
+    </header>
+
+    <figure class="evidence-dialog__figure">
+      <div class="evidence-dialog__canvas">
+        {
+          image.format === 'svg' ? (
+            <Image src={image} alt={alt} loading="lazy" />
+          ) : (
+            <Picture
+              src={image}
+              formats={['avif', 'webp']}
+              widths={[960, 1440]}
+              sizes="92vw"
+              alt={alt}
+              loading="lazy"
+            />
+          )
+        }
+      </div>
+      <figcaption class="evidence-dialog__caption">{caption}</figcaption>
+    </figure>
+  </div>
+</dialog>
+
+<style>
+  .evidence-dialog {
+    width: min(94vw, 76rem);
+    max-height: 92vh;
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .evidence-dialog::backdrop {
+    background-color: rgba(11, 17, 29, 0.8);
+    backdrop-filter: blur(3px);
+  }
+
+  .evidence-dialog__surface {
+    display: flex;
+    flex-direction: column;
+    max-height: 92vh;
+  }
+
+  .evidence-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .evidence-dialog__title {
+    font-size: var(--text-lg);
+  }
+
+  .evidence-dialog__figure {
+    padding: var(--space-5) var(--space-6);
+    overflow-y: auto;
+  }
+
+  .evidence-dialog__canvas {
+    background-color: var(--color-bg-body);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+  }
+
+  .evidence-dialog__canvas :global(img) {
+    width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .evidence-dialog__caption {
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+</style>
+

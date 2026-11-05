@@ -1,0 +1,168 @@
+---
+import type { ProjectEntry } from '../../utils/content';
+import { PROJECT_STATUS_META, formatVerifiedDate } from '../../utils/format';
+import { hasConfirmedUrl } from '../../utils/paths';
+import PendingBadge from '../ui/PendingBadge.astro';
+import StatusBadge from '../ui/StatusBadge.astro';
+
+interface Props {
+  project: ProjectEntry;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const statusMeta = PROJECT_STATUS_META[data.status];
+const createdLabel = formatVerifiedDate(data.createdAt);
+const updatedLabel = formatVerifiedDate(data.updatedAt);
+---
+
+<aside class="meta-sidebar card" aria-label="Ficha técnica del proyecto">
+  <h2 class="meta-sidebar__heading">Ficha técnica</h2>
+
+  <dl class="meta-sidebar__list">
+    <div>
+      <dt>Estado</dt>
+      <dd><StatusBadge label={statusMeta.label} tone={statusMeta.tone} /></dd>
+    </div>
+
+    <div>
+      <dt>Participación</dt>
+      <dd>{data.participation}</dd>
+    </div>
+
+    {
+      createdLabel && (
+        <div>
+          <dt>Fecha de creación</dt>
+          <dd>{createdLabel}</dd>
+        </div>
+      )
+    }
+
+    {
+      updatedLabel && (
+        <div>
+          <dt>Última revisión</dt>
+          <dd>{updatedLabel}</dd>
+        </div>
+      )
+    }
+
+    <div>
+      <dt>Stack real utilizado</dt>
+      <dd>
+        <ul class="tag-list">
+          {data.technologies.map((tech) => <li class="tag">{tech}</li>)}
+        </ul>
+      </dd>
+    </div>
+
+    <div>
+      <dt>Repositorios</dt>
+      <dd class="meta-sidebar__links">
+        {
+          data.repositories.length > 0 ? (
+            data.repositories.map((repo) =>
+              repo.visibility === 'publico' && hasConfirmedUrl(repo.url) ? (
+                <a
+                  class="btn btn--secondary meta-sidebar__btn"
+                  href={repo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {repo.label}
+                </a>
+              ) : (
+                <div class="meta-sidebar__pending-row">
+                  <span>{repo.label}:</span>
+                  <PendingBadge
+                    label={
+                      repo.visibility === 'privado'
+                        ? 'Repositorio privado'
+                        : 'Pendiente de enlazar'
+                    }
+                  />
+                </div>
+              )
+            )
+          ) : (
+            <PendingBadge label="Sin repositorio público registrado" />
+          )
+        }
+      </dd>
+    </div>
+
+    <div>
+      <dt>Demostración en vivo</dt>
+      <dd>
+        {
+          hasConfirmedUrl(data.demoUrl) ? (
+            <a
+              class="btn btn--primary meta-sidebar__btn"
+              href={data.demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Abrir demostración desplegada
+            </a>
+          ) : (
+            <PendingBadge label="Sin despliegue en línea actual (ejecución local)" />
+          )
+        }
+      </dd>
+    </div>
+  </dl>
+</aside>
+
+<style>
+  .meta-sidebar {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-4));
+  }
+
+  .meta-sidebar__heading {
+    font-size: var(--text-lg);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .meta-sidebar__list {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .meta-sidebar__list dt {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .meta-sidebar__list dd {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .meta-sidebar__links {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .meta-sidebar__btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .meta-sidebar__pending-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+</style>
+

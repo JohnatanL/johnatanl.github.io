@@ -1,0 +1,111 @@
+---
+import { Image, Picture } from 'astro:assets';
+import type { CertificateEntry } from '../../utils/content';
+import { formatVerifiedDate } from '../../utils/format';
+import { hasConfirmedUrl, withBase } from '../../utils/paths';
+
+interface Props {
+  certificate: CertificateEntry;
+}
+
+const { certificate } = Astro.props;
+const { data } = certificate;
+const dateLabel = formatVerifiedDate(data.issueDate);
+---
+
+<article class="certificate-card card">
+  {
+    data.previewImage && data.previewAlt && (
+      <div class="certificate-card__preview">
+        {data.previewImage.format === 'svg' ? (
+          <Image src={data.previewImage} alt={data.previewAlt} loading="lazy" />
+        ) : (
+          <Picture
+            src={data.previewImage}
+            formats={['avif', 'webp']}
+            widths={[420, 760]}
+            sizes="(min-width: 768px) 380px, 100vw"
+            alt={data.previewAlt}
+            loading="lazy"
+          />
+        )}
+      </div>
+    )
+  }
+
+  <div class="certificate-card__body">
+    <p class="certificate-card__issuer">
+      {data.issuer}
+      {dateLabel && <span> · {dateLabel}</span>}
+    </p>
+    <h3 class="certificate-card__title">{data.title}</h3>
+    <p class="certificate-card__desc">{data.description}</p>
+
+    <div class="certificate-card__actions">
+      {
+        data.filePath && (
+          <a class="btn btn--primary" href={withBase(data.filePath)} download>
+            Descargar certificado (PDF)
+          </a>
+        )
+      }
+      {
+        hasConfirmedUrl(data.verificationUrl) && (
+          <a
+            class="btn btn--secondary"
+            href={data.verificationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Verificar autenticidad
+          </a>
+        )
+      }
+    </div>
+  </div>
+</article>
+
+<style>
+  .certificate-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .certificate-card__preview {
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--color-border-light);
+  }
+
+  .certificate-card__issuer {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-xs);
+    color: var(--color-accent-blue);
+    font-weight: 600;
+  }
+
+  .certificate-card__issuer span {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+
+  .certificate-card__title {
+    margin-top: var(--space-1);
+    font-size: var(--text-lg);
+  }
+
+  .certificate-card__desc {
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .certificate-card__actions {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+</style>
+

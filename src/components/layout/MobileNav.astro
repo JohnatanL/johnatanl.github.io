@@ -1,0 +1,188 @@
+---
+import type { NavItem } from '../../data/site';
+import { isCurrentRoute, withBase } from '../../utils/paths';
+
+interface Props {
+  items: NavItem[];
+  currentPathname: string;
+}
+
+const { items, currentPathname } = Astro.props;
+---
+
+<div class="mobile-nav" data-mobile-nav>
+  <button
+    type="button"
+    class="mobile-nav__toggle"
+    aria-expanded="false"
+    aria-controls="menu-movil-principal"
+    aria-label="Abrir menú de navegación"
+    data-mobile-toggle
+  >
+    <span class="mobile-nav__icon" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+    <span class="mobile-nav__label">Menú</span>
+  </button>
+
+  <nav
+    id="menu-movil-principal"
+    class="mobile-nav__panel"
+    aria-label="Navegación móvil"
+    hidden
+    data-mobile-panel
+  >
+    <ul class="mobile-nav__list">
+      {
+        items.map((item) => {
+          const active = isCurrentRoute(currentPathname, item.href);
+          return (
+            <li>
+              <a
+                href={withBase(item.href)}
+                class:list={['mobile-nav__link', { 'is-active': active }]}
+                aria-current={active ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </nav>
+</div>
+
+<script>
+  const navRoots = document.querySelectorAll<HTMLElement>('[data-mobile-nav]');
+
+  navRoots.forEach((root) => {
+    const toggle = root.querySelector<HTMLButtonElement>('[data-mobile-toggle]');
+    const panel = root.querySelector<HTMLElement>('[data-mobile-panel]');
+    if (!toggle || !panel) return;
+
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute(
+        'aria-label',
+        open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'
+      );
+      panel.hidden = !open;
+    };
+
+    toggle.addEventListener('click', () => {
+      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+      setOpen(!isExpanded);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (
+        toggle.getAttribute('aria-expanded') === 'true' &&
+        event.target instanceof Node &&
+        !root.contains(event.target)
+      ) {
+        setOpen(false);
+      }
+    });
+  });
+</script>
+
+<style>
+  .mobile-nav {
+    display: block;
+  }
+
+  @media (min-width: 960px) {
+    .mobile-nav {
+      display: none;
+    }
+  }
+
+  .mobile-nav__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-dark);
+    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--color-dark-text-primary);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .mobile-nav__toggle:hover {
+    border-color: var(--color-accent-cyan);
+    color: var(--color-accent-cyan);
+  }
+
+  .mobile-nav__icon {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 1.15rem;
+  }
+
+  .mobile-nav__icon span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    border-radius: 2px;
+    background-color: currentColor;
+  }
+
+  .mobile-nav__panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--color-navy-900);
+    border-bottom: 1px solid var(--color-border-dark);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-4);
+  }
+
+  .mobile-nav__list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+    max-width: var(--container-max);
+    margin-inline: auto;
+  }
+
+  .mobile-nav__link {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--radius-sm);
+    color: var(--color-dark-text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .mobile-nav__link:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--color-dark-text-primary);
+  }
+
+  .mobile-nav__link.is-active {
+    background-color: var(--color-accent-cyan-soft);
+    color: var(--color-accent-cyan);
+    font-weight: 700;
+  }
+</style>
+

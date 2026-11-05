@@ -1,0 +1,29 @@
+{
+  "name": "portafolio-johnatan-lozano",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portafolio web profesional estático de Johnatan Lozano — Aprendiz SENA en Programación de Software",
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4",
+    "npm": ">=9.6.5"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check --minimumFailingSeverity warning",
+    "test": "node --test tests/*.test.ts",
+    "verify": "node scripts/verify-build.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.4.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "typescript": "^6.0.3"
+  }
+}
+

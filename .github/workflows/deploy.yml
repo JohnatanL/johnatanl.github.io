@@ -1,0 +1,71 @@
+name: Desplegar Portafolio en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Verificar, compilar y empaquetar (Node 24)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar código del repositorio
+        uses: actions/checkout@v7
+
+      - name: Configurar Node.js 24 LTS y caché de npm
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Configurar metadatos dinámicos de GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Instalar dependencias de forma reproducible
+        run: npm ci
+
+      - name: Ejecutar pruebas de esquemas y rutas
+        run: npm test
+
+      - name: Verificar tipos y plantillas Astro (errores y advertencias bloqueantes)
+        run: npm run check
+
+      - name: Compilar aplicación estática con origen y base_path reales
+        env:
+          SITE_URL: ${{ steps.pages.outputs.origin || 'https://johnatanl.github.io' }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path || '/' }}
+        run: npm run build
+
+      - name: Validar integridad de rutas, enlaces y metadatos en dist/
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path || '/' }}
+        run: npm run verify
+
+      - name: Subir artefacto estático para GitHub Pages
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./dist
+
+  deploy:
+    name: Publicar en GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Desplegar artefacto en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+

@@ -1,0 +1,108 @@
+---
+interface Props {
+  limitations: string[];
+  futureImprovements: string[];
+}
+
+const { limitations, futureImprovements } = Astro.props;
+---
+
+<div class="limitations-grid">
+  {
+    limitations.length > 0 && (
+      <section class="limitations-box limitations-box--current card" aria-labelledby="lim-current">
+        <div class="limitations-box__header">
+          <span class="limitations-box__tag limitations-box__tag--warn">Estado actual auditado</span>
+          <h3 id="lim-current">Seguridad y limitaciones técnicas conocidas</h3>
+          <p>
+            Restricciones reales verificadas en el código actual. El proyecto se presenta como
+            prototipo funcional académico y no como un sistema endurecido para producción.
+          </p>
+        </div>
+        <ul class="limitations-box__list">
+          {limitations.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    futureImprovements.length > 0 && (
+      <section class="limitations-box limitations-box--future card" aria-labelledby="lim-future">
+        <div class="limitations-box__header">
+          <span class="limitations-box__tag limitations-box__tag--info">Evolución propuesta</span>
+          <h3 id="lim-future">Hoja de ruta y mejoras futuras</h3>
+          <p>
+            Líneas de trabajo identificadas a partir de la auditoría técnica (separadas de las
+            funcionalidades actualmente implementadas).
+          </p>
+        </div>
+        <ul class="limitations-box__list">
+          {futureImprovements.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</div>
+
+<style>
+  .limitations-grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .limitations-box--current {
+    border-left: 4px solid var(--color-warning-border);
+  }
+
+  .limitations-box--future {
+    border-left: 4px solid var(--color-accent-blue);
+  }
+
+  .limitations-box__header {
+    margin-bottom: var(--space-4);
+  }
+
+  .limitations-box__tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    margin-bottom: var(--space-2);
+  }
+
+  .limitations-box__tag--warn {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning-text);
+  }
+
+  .limitations-box__tag--info {
+    background-color: var(--color-info-bg);
+    color: var(--color-info-text);
+  }
+
+  .limitations-box__header h3 {
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
+  }
+
+  .limitations-box__header p {
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .limitations-box__list {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+</style>
+

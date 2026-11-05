@@ -1,0 +1,111 @@
+---
+import { render } from 'astro:content';
+import type { EducationEntry } from '../../utils/content';
+import { EDUCATION_CATEGORY_LABELS, EDUCATION_STATUS_LABELS } from '../../utils/format';
+import StatusBadge from '../ui/StatusBadge.astro';
+
+interface Props {
+  entry: EducationEntry;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+const periodParts = [data.startDate, data.endDate].filter(Boolean);
+---
+
+<article class="education-item card">
+  <header class="education-item__header">
+    <div class="education-item__badges">
+      <StatusBadge label={EDUCATION_CATEGORY_LABELS[data.category]} tone="info" />
+      <StatusBadge
+        label={EDUCATION_STATUS_LABELS[data.status]}
+        tone={data.status === 'finalizado' ? 'success' : 'warning'}
+      />
+    </div>
+
+    <h3 class="education-item__title">{data.title}</h3>
+    <p class="education-item__institution">
+      {data.institution} · <span>{data.location}</span>
+      {periodParts.length > 0 && <span> · {periodParts.join(' — ')}</span>}
+    </p>
+  </header>
+
+  <p class="education-item__summary">{data.summary}</p>
+
+  {
+    data.highlights.length > 0 && (
+      <div class="education-item__highlights">
+        <h4>Competencias y actividades trabajadas</h4>
+        <ul>
+          {data.highlights.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  <div class="education-item__body prose">
+    <Content />
+  </div>
+</article>
+
+<style>
+  .education-item {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .education-item__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .education-item__title {
+    font-size: var(--text-xl);
+    color: var(--color-text-primary);
+  }
+
+  .education-item__institution {
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-accent-blue);
+  }
+
+  .education-item__institution span {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+
+  .education-item__summary {
+    color: var(--color-text-secondary);
+  }
+
+  .education-item__highlights {
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-body);
+    border: 1px solid var(--color-border-light);
+  }
+
+  .education-item__highlights h4 {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+
+  .education-item__highlights ul {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+</style>
+

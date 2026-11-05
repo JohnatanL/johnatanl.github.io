@@ -1,0 +1,65 @@
+---
+interface Props {
+  eyebrow?: string | undefined;
+  title: string;
+  description?: string | undefined;
+  actionHref?: string | undefined;
+  actionLabel?: string | undefined;
+}
+
+const { eyebrow, title, description, actionHref, actionLabel } = Astro.props;
+---
+
+<div class="section-header">
+  <div class="section-header__copy">
+    {eyebrow && <p class="section-header__eyebrow">{eyebrow}</p>}
+    <h2 class="section-header__title">{title}</h2>
+    {description && <p class="section-header__desc">{description}</p>}
+  </div>
+  {
+    actionHref && actionLabel && (
+      <div class="section-header__action">
+        <a class="btn btn--secondary" href={actionHref}>
+          {actionLabel}
+        </a>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .section-header__copy {
+    max-width: 64ch;
+  }
+
+  .section-header__eyebrow {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent-blue);
+    margin-bottom: var(--space-2);
+  }
+
+  .section-header__title {
+    font-size: var(--text-2xl);
+    color: var(--color-text-primary);
+  }
+
+  .section-header__desc {
+    margin-top: var(--space-2);
+    color: var(--color-text-secondary);
+    font-size: var(--text-base);
+  }
+</style>
+

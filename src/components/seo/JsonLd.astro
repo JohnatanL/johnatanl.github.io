@@ -1,0 +1,51 @@
+---
+import { siteConfig } from '../../data/site';
+import { hasConfirmedUrl, withBase } from '../../utils/paths';
+
+const siteOrigin = Astro.site ?? new URL('https://johnatanl.github.io');
+const homeUrl = new URL(withBase('/'), siteOrigin).toString();
+
+const sameAs: string[] = [];
+if (hasConfirmedUrl(siteConfig.social.github.url)) {
+  sameAs.push(siteConfig.social.github.url);
+}
+if (hasConfirmedUrl(siteConfig.social.linkedin.url)) {
+  sameAs.push(siteConfig.social.linkedin.url);
+}
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${homeUrl}#person`,
+      name: siteConfig.author.name,
+      jobTitle: siteConfig.author.fullRole,
+      affiliation: {
+        '@type': 'EducationalOrganization',
+        name: siteConfig.author.institution,
+      },
+      address: {
+        '@type': 'PostalAddress',
+        addressCountry: 'CO',
+      },
+      url: homeUrl,
+      ...(sameAs.length > 0 ? { sameAs } : {}),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${homeUrl}#website`,
+      url: homeUrl,
+      name: siteConfig.siteName,
+      description: siteConfig.defaultDescription,
+      inLanguage: 'es-CO',
+      author: {
+        '@id': `${homeUrl}#person`,
+      },
+    },
+  ],
+};
+---
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+

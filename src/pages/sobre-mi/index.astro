@@ -1,0 +1,127 @@
+---
+import AvailabilityPill from '../../components/ui/AvailabilityPill.astro';
+import PageHero from '../../components/ui/PageHero.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import { profileData } from '../../data/profile';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { withBase } from '../../utils/paths';
+---
+
+<BaseLayout
+  title="Sobre mí"
+  description="Perfil técnico, enfoque de trabajo y objetivos de aprendizaje de Johnatan Lozano, aprendiz del SENA en Programación de Software en Colombia."
+>
+  <PageHero
+    eyebrow="Perfil profesional"
+    title={profileData.headline}
+    lead={profileData.lead}
+  >
+    <div class="about-hero-pill">
+      <AvailabilityPill variant="dark" />
+    </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="container about-grid">
+      <article class="card prose" aria-labelledby="sobre-trayectoria">
+        <h2 id="sobre-trayectoria">Cómo abordo el desarrollo de software</h2>
+        {profileData.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </article>
+
+      <aside class="card about-goals" aria-labelledby="sobre-objetivos">
+        <h2 id="sobre-objetivos">Objetivos actuales</h2>
+        <ul>
+          {profileData.currentGoals.map((goal) => <li>{goal}</li>)}
+        </ul>
+        <div class="about-goals__actions">
+          <a class="btn btn--primary" href={withBase('/proyectos/')}>
+            Revisar proyectos
+          </a>
+          <a class="btn btn--secondary" href={withBase('/contacto/')}>
+            Contactar
+          </a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Principios de trabajo"
+        title="Pilares que guían mis proyectos académicos y personales"
+      />
+
+      <div class="pillars-grid">
+        {
+          profileData.pillars.map((pillar) => (
+            <article class="card pillar-card">
+              <h3>{pillar.title}</h3>
+              <p>{pillar.description}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-hero-pill {
+    margin-top: var(--space-5);
+  }
+
+  .about-grid {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  @media (min-width: 960px) {
+    .about-grid {
+      grid-template-columns: 1.35fr 1fr;
+    }
+  }
+
+  .about-goals h2 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .about-goals ul {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .about-goals__actions {
+    margin-top: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .pillars-grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 760px) {
+    .pillars-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .pillar-card h3 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+  }
+
+  .pillar-card p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+</style>
+

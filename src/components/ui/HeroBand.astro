@@ -1,0 +1,200 @@
+---
+import { siteConfig } from '../../data/site';
+import { hasConfirmedUrl, withBase } from '../../utils/paths';
+import AvailabilityPill from './AvailabilityPill.astro';
+---
+
+<section class="hero-band surface-dark">
+  <div class="container hero-band__grid">
+    <div class="hero-band__content">
+      <AvailabilityPill variant="dark" />
+      <h1 class="hero-band__title">
+        Hola, soy <span class="hero-band__highlight">{siteConfig.author.name}</span>.
+      </h1>
+      <p class="hero-band__role">
+        {siteConfig.author.fullRole} · <span>{siteConfig.author.institution}</span> ({siteConfig.author.location})
+      </p>
+      <p class="hero-band__summary">
+        Construyo aplicaciones web con separación clara entre frontend y backend, APIs REST en
+        Python con FastAPI, interfaces modulares en JavaScript ES6+ y documentación técnica
+        honesta y verificable.
+      </p>
+
+      <div class="hero-band__actions">
+        <a class="btn btn--primary" href={withBase('/proyectos/')}>
+          Explorar proyectos
+        </a>
+        <a class="btn btn--secondary" href={withBase('/contacto/')}>
+          Ver canales de contacto
+        </a>
+        {
+          hasConfirmedUrl(siteConfig.social.github.url) && (
+            <a
+              class="btn btn--secondary"
+              href={siteConfig.social.github.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub ({siteConfig.social.github.handle})
+            </a>
+          )
+        }
+        {
+          hasConfirmedUrl(siteConfig.social.linkedin.url) && (
+            <a
+              class="btn btn--secondary"
+              href={siteConfig.social.linkedin.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {siteConfig.social.linkedin.label}
+            </a>
+          )
+        }
+        {
+          siteConfig.cv.isAvailable ? (
+            <a class="btn btn--secondary" href={withBase(siteConfig.cv.filePath)} download>
+              {siteConfig.cv.label}
+            </a>
+          ) : (
+            <span class="btn btn--disabled" aria-disabled="true" title={siteConfig.cv.pendingLabel}>
+              CV en PDF (en preparación)
+            </span>
+          )
+        }
+      </div>
+    </div>
+
+    <aside class="hero-band__panel" aria-label="Resumen de enfoque técnico">
+      <p class="hero-band__panel-title">Enfoque de ingeniería</p>
+      <dl class="hero-band__specs">
+        <div>
+          <dt>Arquitectura</dt>
+          <dd>Cliente-servidor desacoplado y contratos REST documentados</dd>
+        </div>
+        <div>
+          <dt>Backend aplicado</dt>
+          <dd>Python 3.12 · FastAPI · SQLAlchemy 2.0 ORM · SQLite · Docker</dd>
+        </div>
+        <div>
+          <dt>Frontend aplicado</dt>
+          <dd>HTML5 semántico · CSS3 moderno · JavaScript ES6+ POO · Astro</dd>
+        </div>
+        <div>
+          <dt>Criterio de calidad</dt>
+          <dd>Tipado estricto, accesibilidad WCAG AA y transparencia técnica</dd>
+        </div>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .hero-band {
+    background-color: var(--color-navy-900);
+    background-image:
+      radial-gradient(circle at 85% 20%, rgba(53, 99, 235, 0.22), transparent 45%),
+      linear-gradient(160deg, var(--color-navy-950) 0%, var(--color-navy-900) 60%, var(--color-navy-800) 100%);
+    color: var(--color-dark-text-primary);
+    padding-block: var(--space-12) var(--space-16);
+    border-bottom: 1px solid var(--color-border-dark);
+  }
+
+  .hero-band__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  @media (min-width: 980px) {
+    .hero-band__grid {
+      grid-template-columns: 1.45fr 1fr;
+      gap: var(--space-12);
+    }
+  }
+
+  .hero-band__title {
+    margin-top: var(--space-5);
+    font-size: var(--text-4xl);
+    line-height: 1.12;
+  }
+
+  .hero-band__highlight {
+    color: var(--color-accent-cyan);
+  }
+
+  .hero-band__role {
+    margin-top: var(--space-3);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-dark-text-primary);
+  }
+
+  .hero-band__role span {
+    color: var(--color-dark-text-secondary);
+    font-weight: 500;
+  }
+
+  .hero-band__summary {
+    margin-top: var(--space-4);
+    font-size: var(--text-base);
+    color: var(--color-dark-text-secondary);
+    max-width: 60ch;
+  }
+
+  .hero-band__actions {
+    margin-top: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .hero-band__panel {
+    background-color: rgba(24, 35, 56, 0.85);
+    border: 1px solid var(--color-border-dark);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .hero-band__panel-title {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent-cyan);
+    margin-bottom: var(--space-4);
+  }
+
+  .hero-band__specs {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .hero-band__specs div {
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid rgba(203, 213, 225, 0.12);
+  }
+
+  .hero-band__specs div:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .hero-band__specs dt {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-dark-text-muted);
+  }
+
+  .hero-band__specs dd {
+    margin: 0.2rem 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-dark-text-primary);
+  }
+</style>
+

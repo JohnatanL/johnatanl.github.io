@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../utils/paths';
+---
+
+<BaseLayout
+  title="Página no encontrada (404)"
+  description="La dirección solicitada no existe o fue movida dentro del portafolio de Johnatan Lozano."
+  noindex={true}
+>
+  <section class="section">
+    <div class="container not-found card">
+      <p class="not-found__code">Error 404</p>
+      <h1 class="not-found__title">No encontramos la página solicitada</h1>
+      <p class="not-found__desc">
+        Es posible que el enlace haya cambiado o que el recurso aún no esté publicado. Puedes
+        volver al inicio o consultar el catálogo de proyectos documentados.
+      </p>
+      <div class="not-found__actions">
+        <a class="btn btn--primary" href={withBase('/')}>
+          Ir al inicio
+        </a>
+        <a class="btn btn--secondary" href={withBase('/proyectos/')}>
+          Ver proyectos
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    max-width: 42rem;
+    margin-inline: auto;
+    text-align: center;
+    padding: var(--space-10) var(--space-6);
+    display: grid;
+    gap: var(--space-4);
+    justify-items: center;
+  }
+
+  .not-found__code {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .not-found__title {
+    font-size: var(--text-3xl);
+  }
+
+  .not-found__desc {
+    color: var(--color-text-secondary);
+    max-width: 50ch;
+  }
+
+  .not-found__actions {
+    margin-top: var(--space-2);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+</style>
+

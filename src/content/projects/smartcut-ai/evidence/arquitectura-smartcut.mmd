@@ -1,0 +1,32 @@
+flowchart LR
+    subgraph Frontend["Frontend · HTML5, CSS3, JS ES6+ POO (6 clases), dialog, Tailwind/Icons CDN"]
+        AuthUI["AuthController + UIController (Registro, Login, Sesión, Dashboard)"]
+        CRUDUI["CrudModule (Usuarios, Servicios, Productos)"]
+        ApiCli["ApiClient (Fetch API + localStorage Bearer JWT)"]
+        subgraph Prototipos["Módulos de Demostración Visual"]
+            SimUI["Simulador de Estilo (URL.createObjectURL local · Sin ejecución de IA)"]
+            AgendUI["Agendamiento (Consulta catálogo real · Confirmación simulada sin guardar cita)"]
+        end
+    end
+
+    subgraph Backend["Backend · Python 3.12.1, FastAPI, Uvicorn (Docker / Docker Compose)"]
+        CORS["CORSMiddleware (Puertos locales 5500/5501)"]
+        AuthRouter["Router /auth (JWT HS256 · Python-JOSE · Passlib/Bcrypt)"]
+        CrudRouters["Routers /users, /services, /products (Pydantic v2 · Sin guardia JWT actual)"]
+        ORM["SQLAlchemy 2.0 ORM"]
+    end
+
+    subgraph Datos["Persistencia Local (Volumen ./data:/app/data)"]
+        SQLite[("SQLite · smartcut.db")]
+    end
+
+    AuthUI --> ApiCli
+    CRUDUI --> ApiCli
+    AgendUI -- "Solo lectura: GET /services/" --> ApiCli
+    ApiCli -- "API REST (Form OAuth2 / JSON + Header Bearer)" --> CORS
+    CORS --> AuthRouter
+    CORS --> CrudRouters
+    AuthRouter --> ORM
+    CrudRouters --> ORM
+    ORM --> SQLite
+

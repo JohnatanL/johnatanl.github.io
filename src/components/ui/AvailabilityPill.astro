@@ -1,0 +1,54 @@
+---
+import { siteConfig } from '../../data/site';
+
+interface Props {
+  variant?: 'dark' | 'light' | undefined;
+}
+
+const { variant = 'dark' } = Astro.props;
+const { isAvailable, label } = siteConfig.availability;
+---
+
+{
+  isAvailable && (
+    <span class:list={['availability-pill', `availability-pill--${variant}`]}>
+      <span class="availability-pill__dot" aria-hidden="true" />
+      <span>{label}</span>
+    </span>
+  )
+}
+
+<style>
+  .availability-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    max-width: 100%;
+    padding: 0.35rem 0.85rem;
+    border-radius: 1rem;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .availability-pill--dark {
+    background-color: rgba(116, 212, 229, 0.12);
+    border: 1px solid rgba(116, 212, 229, 0.4);
+    color: var(--color-accent-cyan);
+  }
+
+  .availability-pill--light {
+    background-color: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
+    color: var(--color-success-text);
+  }
+
+  .availability-pill__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: currentColor;
+    flex-shrink: 0;
+  }
+</style>
+

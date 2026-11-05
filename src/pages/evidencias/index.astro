@@ -1,0 +1,41 @@
+---
+import EvidenceGallery from '../../components/evidence/EvidenceGallery.astro';
+import PageHero from '../../components/ui/PageHero.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllPublishedEvidences } from '../../utils/content';
+
+const evidences = await getAllPublishedEvidences();
+---
+
+<BaseLayout
+  title="Evidencias técnicas"
+  description="Diagramas de arquitectura y artefactos técnicos verificados de los proyectos desarrollados por Johnatan Lozano."
+>
+  <PageHero
+    eyebrow="Trazabilidad técnica"
+    title="Evidencias y diagramas verificados"
+    lead="Artefactos visuales y documentales revisados individualmente bajo criterios de exactitud técnica, accesibilidad y protección de datos personales."
+  />
+
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Repositorio visual"
+        title="Artefactos publicados"
+        description="Cada evidencia corresponde a componentes realmente implementados en código y enlaza con su estudio de caso completo."
+      />
+
+      {
+        evidences.length > 0 ? (
+          <EvidenceGallery items={evidences} showProjectLink={true} />
+        ) : (
+          <div class="card">
+            <p>Aún no hay evidencias gráficas publicadas.</p>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+

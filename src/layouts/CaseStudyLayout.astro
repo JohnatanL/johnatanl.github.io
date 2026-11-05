@@ -1,0 +1,308 @@
+---
+import ChallengeSolutionList from '../components/projects/ChallengeSolutionList.astro';
+import LimitationsList from '../components/projects/LimitationsList.astro';
+import ProjectFeatureGroup from '../components/projects/ProjectFeatureGroup.astro';
+import ProjectMetaSidebar from '../components/projects/ProjectMetaSidebar.astro';
+import EvidenceGallery from '../components/evidence/EvidenceGallery.astro';
+import StatusBadge from '../components/ui/StatusBadge.astro';
+import type { ProjectEntry } from '../utils/content';
+import { PROJECT_STATUS_META } from '../utils/format';
+import { hasConfirmedUrl, withBase } from '../utils/paths';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  project: ProjectEntry;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const statusMeta = PROJECT_STATUS_META[data.status];
+const publicRepos = data.repositories.filter(
+  (repo) => repo.visibility === 'publico' && hasConfirmedUrl(repo.url)
+);
+const galleryItems = data.evidences.map((evidence) => ({
+  evidence,
+  projectId: project.id,
+  projectTitle: data.title,
+}));
+---
+
+<BaseLayout
+  title={`${data.title} — Estudio de caso`}
+  description={data.summary}
+  ogType="article"
+  ogImageSrc={data.coverImage && data.coverImage.format !== 'svg' ? data.coverImage.src : undefined}
+>
+  <section class="case-hero surface-dark">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <ol>
+          <li><a href={withBase('/')}>Inicio</a></li>
+          <li aria-hidden="true">/</li>
+          <li><a href={withBase('/proyectos/')}>Proyectos</a></li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page">{data.title}</li>
+        </ol>
+      </nav>
+
+      <div class="case-hero__meta">
+        <StatusBadge label={statusMeta.label} tone={statusMeta.tone} />
+      </div>
+
+      <h1 class="case-hero__title">{data.title}</h1>
+      <p class="case-hero__summary">{data.summary}</p>
+
+      <div class="case-hero__actions">
+        {
+          publicRepos.map((repo) => (
+            <a
+              class="btn btn--primary"
+              href={repo.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {repo.label}
+            </a>
+          ))
+        }
+        <a class="btn btn--secondary" href={withBase('/proyectos/')}>
+          Volver al listado de proyectos
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container case-grid">
+      <div class="case-main">
+        <section class="case-block card" aria-labelledby="sec-problema">
+          <div class="case-dual">
+            <div>
+              <h2 id="sec-problema">Problema abordado</h2>
+              <p>{data.problem}</p>
+            </div>
+            <div>
+              <h2>Objetivo técnico</h2>
+              <p>{data.objective}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="case-block" aria-labelledby="sec-arquitectura">
+          <h2 id="sec-arquitectura" class="case-section-title">Arquitectura del sistema</h2>
+          <p class="case-section-lead">{data.architecture.summary}</p>
+          {
+            data.architecture.layers.length > 0 && (
+              <div class="layers-grid">
+                {data.architecture.layers.map((layer) => (
+                  <article class="card layer-card">
+                    <h3>{layer.name}</h3>
+                    <p>{layer.description}</p>
+                  </article>
+                ))}
+              </div>
+            )
+          }
+        </section>
+
+        {
+          galleryItems.length > 0 && (
+            <section class="case-block" aria-labelledby="sec-evidencias">
+              <h2 id="sec-evidencias" class="case-section-title">
+                Diagrama y evidencias técnicas verificadas
+              </h2>
+              <EvidenceGallery items={galleryItems} />
+            </section>
+          )
+        }
+
+        <section class="case-block" aria-labelledby="sec-funcionalidades">
+          <h2 id="sec-funcionalidades" class="case-section-title">
+            Funcionalidades operativas frente a demostraciones visuales
+          </h2>
+          <ProjectFeatureGroup features={data.features} />
+        </section>
+
+        <section class="case-block card prose" aria-label="Análisis técnico detallado">
+          <slot />
+        </section>
+
+        {
+          data.challenges.length > 0 && (
+            <section class="case-block" aria-labelledby="sec-retos">
+              <h2 id="sec-retos" class="case-section-title">Retos técnicos y soluciones</h2>
+              <ChallengeSolutionList challenges={data.challenges} />
+            </section>
+          )
+        }
+
+        {
+          (data.limitations.length > 0 || data.futureImprovements.length > 0) && (
+            <section class="case-block" aria-labelledby="sec-limitaciones">
+              <h2 id="sec-limitaciones" class="case-section-title">
+                Alcance actual, seguridad y evolución propuesta
+              </h2>
+              <LimitationsList
+                limitations={data.limitations}
+                futureImprovements={data.futureImprovements}
+              />
+            </section>
+          )
+        }
+
+        {
+          data.learnings.length > 0 && (
+            <section class="case-block card" aria-labelledby="sec-aprendizajes">
+              <h2 id="sec-aprendizajes" class="case-section-title">Aprendizajes obtenidos</h2>
+              <ul class="learnings-list">
+                {data.learnings.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+      </div>
+
+      <div class="case-aside">
+        <ProjectMetaSidebar project={project} />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .case-hero {
+    background-color: var(--color-navy-900);
+    background-image: linear-gradient(160deg, var(--color-navy-950) 0%, var(--color-navy-900) 65%, var(--color-navy-800) 100%);
+    color: var(--color-dark-text-primary);
+    padding-block: var(--space-10) var(--space-12);
+    border-bottom: 1px solid var(--color-border-dark);
+  }
+
+  .breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    font-size: var(--text-xs);
+    color: var(--color-dark-text-muted);
+    margin-bottom: var(--space-4);
+  }
+
+  .breadcrumb a {
+    color: var(--color-dark-text-secondary);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-accent-cyan);
+    text-decoration: underline;
+  }
+
+  .case-hero__meta {
+    margin-bottom: var(--space-3);
+  }
+
+  .case-hero__title {
+    font-size: var(--text-4xl);
+  }
+
+  .case-hero__summary {
+    margin-top: var(--space-3);
+    font-size: var(--text-lg);
+    color: var(--color-dark-text-secondary);
+    max-width: 66ch;
+  }
+
+  .case-hero__actions {
+    margin-top: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .case-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .case-grid {
+      grid-template-columns: minmax(0, 1fr) 21rem;
+    }
+  }
+
+  .case-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  .case-dual {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 720px) {
+    .case-dual {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .case-dual h2 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+  }
+
+  .case-dual p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .case-section-title {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .case-section-lead {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-5);
+    max-width: var(--reading-max);
+  }
+
+  .layers-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 720px) {
+    .layers-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .layer-card h3 {
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+
+  .layer-card p {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .learnings-list {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+</style>
+

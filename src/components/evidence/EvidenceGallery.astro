@@ -1,0 +1,225 @@
+---
+import { Image, Picture } from 'astro:assets';
+import type { ProjectEvidenceItem } from '../../utils/content';
+import { EVIDENCE_TYPE_LABELS } from '../../utils/format';
+import { withBase } from '../../utils/paths';
+import StatusBadge from '../ui/StatusBadge.astro';
+import EvidenceDialog from './EvidenceDialog.astro';
+
+interface GalleryItem {
+  evidence: ProjectEvidenceItem;
+  projectId: string;
+  projectTitle?: string | undefined;
+}
+
+interface Props {
+  items: GalleryItem[];
+  showProjectLink?: boolean | undefined;
+}
+
+const { items, showProjectLink = false } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <div class="evidence-gallery" data-evidence-gallery>
+      <div class="evidence-gallery__grid">
+        {items.map(({ evidence, projectId, projectTitle }, idx) => {
+          const dialogId = `evidencia-${projectId}-${idx}`;
+          const typeLabel = EVIDENCE_TYPE_LABELS[evidence.type];
+
+          return (
+            <figure class="evidence-card card">
+              {evidence.image && evidence.alt && (
+                <div class="evidence-card__preview">
+                  {evidence.image.format === 'svg' ? (
+                    <Image src={evidence.image} alt={evidence.alt} loading="lazy" />
+                  ) : (
+                    <Picture
+                      src={evidence.image}
+                      formats={['avif', 'webp']}
+                      widths={[520, 960]}
+                      sizes="(min-width: 960px) 520px, 100vw"
+                      alt={evidence.alt}
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+              )}
+
+              <figcaption class="evidence-card__body">
+                <div class="evidence-card__badges">
+                  <StatusBadge label={typeLabel} tone="info" />
+                  {showProjectLink && projectTitle && (
+                    <a
+                      class="evidence-card__project-link"
+                      href={withBase(`/proyectos/${projectId}/`)}
+                    >
+                      Proyecto: {projectTitle}
+                    </a>
+                  )}
+                </div>
+
+                <h3 class="evidence-card__title">{evidence.title}</h3>
+                <p class="evidence-card__caption">{evidence.caption}</p>
+
+                <div class="evidence-card__actions">
+                  {evidence.image && evidence.alt && (
+                    <button
+                      type="button"
+                      class="btn btn--secondary"
+                      data-dialog-open={dialogId}
+                      aria-haspopup="dialog"
+                      aria-controls={dialogId}
+                    >
+                      Ampliar diagrama / vista
+                    </button>
+                  )}
+
+                  {evidence.filePath && (
+                    <a
+                      class="btn btn--primary"
+                      href={withBase(evidence.filePath)}
+                      download
+                    >
+                      Descargar documento
+                    </a>
+                  )}
+
+                  {evidence.externalUrl && (
+                    <a
+                      class="btn btn--primary"
+                      href={evidence.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Abrir recurso externo
+                    </a>
+                  )}
+                </div>
+              </figcaption>
+
+              {evidence.image && evidence.alt && (
+                <EvidenceDialog
+                  dialogId={dialogId}
+                  title={evidence.title}
+                  caption={evidence.caption}
+                  image={evidence.image}
+                  alt={evidence.alt}
+                />
+              )}
+            </figure>
+          );
+        })}
+      </div>
+    </div>
+  )
+}
+
+<script>
+  const galleries = document.querySelectorAll<HTMLElement>('[data-evidence-gallery]');
+
+  galleries.forEach((gallery) => {
+    const triggers = gallery.querySelectorAll<HTMLButtonElement>('[data-dialog-open]');
+
+    triggers.forEach((trigger) => {
+      const targetId = trigger.getAttribute('data-dialog-open');
+      if (!targetId) return;
+      const dialog = document.getElementById(targetId);
+      if (!(dialog instanceof HTMLDialogElement)) return;
+
+      const closeBtn = dialog.querySelector<HTMLButtonElement>('[data-dialog-close]');
+
+      trigger.addEventListener('click', () => {
+        dialog.showModal();
+        closeBtn?.focus();
+      });
+
+      closeBtn?.addEventListener('click', () => {
+        dialog.close();
+      });
+
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) {
+          dialog.close();
+        }
+      });
+
+      dialog.addEventListener('close', () => {
+        trigger.focus();
+      });
+    });
+  });
+</script>
+
+<style>
+  .evidence-gallery__grid {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 900px) {
+    .evidence-gallery__grid {
+      grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    }
+  }
+
+  .evidence-card {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .evidence-card__preview {
+    background-color: var(--color-bg-body);
+    border-bottom: 1px solid var(--color-border-light);
+    padding: var(--space-4);
+  }
+
+  .evidence-card__preview :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+  }
+
+  .evidence-card__body {
+    padding: var(--space-6);
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .evidence-card__badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .evidence-card__project-link {
+    font-size: var(--text-xs);
+    font-weight: 600;
+  }
+
+  .evidence-card__title {
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
+  }
+
+  .evidence-card__caption {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .evidence-card__actions {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+</style>
+

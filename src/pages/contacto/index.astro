@@ -1,0 +1,23 @@
+---
+import ContactCard from '../../components/contact/ContactCard.astro';
+import PageHero from '../../components/ui/PageHero.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Contacto"
+  description="Canales de contacto profesional, perfil de GitHub y disponibilidad de Johnatan Lozano en Colombia."
+>
+  <PageHero
+    eyebrow="Contacto profesional"
+    title="Canales directos y disponibilidad"
+    lead="Abierto a oportunidades de etapa productiva, práctica formativa y roles junior de desarrollo de software."
+  />
+
+  <section class="section">
+    <div class="container">
+      <ContactCard />
+    </div>
+  </section>
+</BaseLayout>
+

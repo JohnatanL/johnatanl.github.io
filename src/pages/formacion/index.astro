@@ -1,0 +1,74 @@
+---
+import CertificateCard from '../../components/education/CertificateCard.astro';
+import EducationItem from '../../components/education/EducationItem.astro';
+import PageHero from '../../components/ui/PageHero.astro';
+import SectionHeader from '../../components/ui/SectionHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublishedCertificates, getPublishedEducation } from '../../utils/content';
+
+const educationEntries = await getPublishedEducation();
+const certificates = await getPublishedCertificates();
+---
+
+<BaseLayout
+  title="Formación académica"
+  description="Formación técnica en el SENA en el programa Técnico en Programación de Software y ruta de aprendizaje de Johnatan Lozano."
+>
+  <PageHero
+    eyebrow="Educación y certificaciones"
+    title="Formación técnica en Programación de Software"
+    lead="Registro verificable de estudios académicos y competencias desarrolladas en el Servicio Nacional de Aprendizaje (SENA), Colombia."
+  />
+
+  <section class="section">
+    <div class="container">
+      <SectionHeader
+        eyebrow="Estudios actuales"
+        title="Formación académica"
+      />
+
+      <div class="education-list">
+        {educationEntries.map((entry) => <EducationItem entry={entry} />)}
+      </div>
+    </div>
+  </section>
+
+  {
+    certificates.length > 0 && (
+      <section class="section section--alt">
+        <div class="container">
+          <SectionHeader
+            eyebrow="Credenciales verificables"
+            title="Certificados publicados"
+            description="Documentos y enlaces de verificación emitidos por instituciones formadoras."
+          />
+
+          <div class="certificates-grid">
+            {certificates.map((cert) => (
+              <CertificateCard certificate={cert} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .education-list {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .certificates-grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 760px) {
+    .certificates-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
+

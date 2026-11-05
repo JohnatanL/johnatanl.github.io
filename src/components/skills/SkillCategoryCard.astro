@@ -1,0 +1,120 @@
+---
+import type { SkillCategory } from '../../data/skills';
+import { SKILL_CONTEXT_META } from '../../utils/format';
+import { withBase } from '../../utils/paths';
+import StatusBadge from '../ui/StatusBadge.astro';
+
+interface Props {
+  category: SkillCategory;
+  projectTitlesById?: Record<string, string> | undefined;
+}
+
+const { category, projectTitlesById = {} } = Astro.props;
+---
+
+<section class="skill-category card" aria-labelledby={`cat-${category.id}`}>
+  <header class="skill-category__header">
+    <h2 id={`cat-${category.id}`} class="skill-category__title">{category.title}</h2>
+    <p class="skill-category__summary">{category.summary}</p>
+  </header>
+
+  <ul class="skill-category__list">
+    {
+      category.skills.map((skill) => {
+        const contextMeta = SKILL_CONTEXT_META[skill.context];
+        return (
+          <li class="skill-item">
+            <div class="skill-item__top">
+              <h3 class="skill-item__name">{skill.name}</h3>
+              <StatusBadge label={contextMeta.label} tone={contextMeta.tone} />
+            </div>
+
+            <p class="skill-item__detail">{skill.detail}</p>
+
+            {skill.relatedProjects.length > 0 && (
+              <p class="skill-item__projects">
+                <span>Evidencia en proyecto: </span>
+                {skill.relatedProjects.map((projectId, idx) => (
+                  <>
+                    {idx > 0 && ', '}
+                    <a href={withBase(`/proyectos/${projectId}/`)}>
+                      {projectTitlesById[projectId] ?? projectId}
+                    </a>
+                  </>
+                ))}
+              </p>
+            )}
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>
+
+<style>
+  .skill-category__header {
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-5);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .skill-category__title {
+    font-size: var(--text-xl);
+  }
+
+  .skill-category__summary {
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .skill-category__list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 760px) {
+    .skill-category__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .skill-item {
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-body);
+    border: 1px solid var(--color-border-light);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .skill-item__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .skill-item__name {
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+  }
+
+  .skill-item__detail {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .skill-item__projects {
+    margin-top: auto;
+    padding-top: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+</style>
+

@@ -1,0 +1,183 @@
+---
+import { siteConfig } from '../../data/site';
+import { hasConfirmedUrl, isPending, withBase } from '../../utils/paths';
+
+const currentYear = new Date().getUTCFullYear();
+---
+
+<footer class="site-footer surface-dark">
+  <div class="container site-footer__grid">
+    <div class="site-footer__brand">
+      <p class="site-footer__title">{siteConfig.author.name}</p>
+      <p class="site-footer__subtitle">
+        {siteConfig.author.fullRole} · {siteConfig.author.institution} ({siteConfig.author.location})
+      </p>
+      <p class="site-footer__note">{siteConfig.author.tagline}</p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="Enlaces del pie de página">
+      <p class="site-footer__heading">Secciones</p>
+      <ul class="site-footer__list">
+        {
+          siteConfig.navigation.map((item) => (
+            <li>
+              <a href={withBase(item.href)}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-footer__links">
+      <p class="site-footer__heading">Perfiles y recursos</p>
+      <ul class="site-footer__list">
+        {
+          hasConfirmedUrl(siteConfig.social.github.url) && (
+            <li>
+              <a
+                href={siteConfig.social.github.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub ({siteConfig.social.github.handle})
+              </a>
+            </li>
+          )
+        }
+        {
+          hasConfirmedUrl(siteConfig.social.linkedin.url) ? (
+            <li>
+              <a
+                href={siteConfig.social.linkedin.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LinkedIn
+              </a>
+            </li>
+          ) : (
+            <li class="site-footer__pending">LinkedIn: pendiente de enlazar</li>
+          )
+        }
+        {
+          !isPending(siteConfig.social.email.value) && (
+            <li>
+              <a href={`mailto:${siteConfig.social.email.value}`}>
+                {siteConfig.social.email.value}
+              </a>
+            </li>
+          )
+        }
+        {
+          siteConfig.cv.isAvailable ? (
+            <li>
+              <a href={withBase(siteConfig.cv.filePath)} download>
+                {siteConfig.cv.label}
+              </a>
+            </li>
+          ) : (
+            <li class="site-footer__pending">CV en PDF: en preparación</li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="container site-footer__bottom">
+    <p>© {currentYear} {siteConfig.author.name}. Construido con Astro y TypeScript estricto.</p>
+    <p class="site-footer__arch">Aplicación web estática · Sin rastreadores ni servicios externos innecesarios</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background-color: var(--color-navy-900);
+    color: var(--color-dark-text-secondary);
+    border-top: 1px solid var(--color-border-dark);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-8);
+    margin-top: var(--space-16);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 768px) {
+    .site-footer__grid {
+      grid-template-columns: 1.5fr 1fr 1fr;
+    }
+  }
+
+  .site-footer__title {
+    font-family: var(--font-heading, sans-serif);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-dark-text-primary);
+  }
+
+  .site-footer__subtitle {
+    margin-top: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--color-accent-cyan);
+    font-weight: 500;
+  }
+
+  .site-footer__note {
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-dark-text-muted);
+    max-width: 46ch;
+  }
+
+  .site-footer__heading {
+    font-family: var(--font-heading, sans-serif);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-dark-text-primary);
+    margin-bottom: var(--space-3);
+  }
+
+  .site-footer__list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+  }
+
+  .site-footer__list a {
+    color: var(--color-dark-text-secondary);
+    text-decoration: none;
+  }
+
+  .site-footer__list a:hover {
+    color: var(--color-accent-cyan);
+    text-decoration: underline;
+  }
+
+  .site-footer__pending {
+    color: var(--color-dark-text-muted);
+    font-size: var(--text-xs);
+  }
+
+  .site-footer__bottom {
+    margin-top: var(--space-10);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border-dark);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-dark-text-muted);
+  }
+
+  .site-footer__arch {
+    font-family: var(--font-mono, monospace);
+  }
+</style>
+

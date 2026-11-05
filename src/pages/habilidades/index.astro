@@ -1,0 +1,95 @@
+---
+import SkillCategoryCard from '../../components/skills/SkillCategoryCard.astro';
+import PageHero from '../../components/ui/PageHero.astro';
+import StatusBadge from '../../components/ui/StatusBadge.astro';
+import { skillCategories } from '../../data/skills';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublishedProjects } from '../../utils/content';
+import { SKILL_CONTEXT_META } from '../../utils/format';
+
+const publishedProjects = await getPublishedProjects();
+const projectTitlesById = Object.fromEntries(
+  publishedProjects.map((project) => [project.id, project.data.title])
+);
+---
+
+<BaseLayout
+  title="Habilidades técnicas"
+  description="Catálogo honesto de lenguajes, frameworks, bases de datos y herramientas de desarrollo utilizadas y en formación por Johnatan Lozano."
+>
+  <PageHero
+    eyebrow="Stack y herramientas"
+    title="Habilidades técnicas verificables"
+    lead="En lugar de barras de porcentaje subjetivas, cada tecnología indica cómo ha sido utilizada y con qué proyecto publicado se relaciona."
+  />
+
+  <section class="section">
+    <div class="container">
+      <aside class="legend card" aria-label="Criterios de clasificación de habilidades">
+        <p class="legend__title">Criterio de clasificación:</p>
+        <div class="legend__items">
+          <div>
+            <StatusBadge
+              label={SKILL_CONTEXT_META['aplicado-en-proyectos'].label}
+              tone={SKILL_CONTEXT_META['aplicado-en-proyectos'].tone}
+            />
+            <span>Evidencia directa comprobable en código fuente publicado.</span>
+          </div>
+          <div>
+            <StatusBadge
+              label={SKILL_CONTEXT_META['en-formacion'].label}
+              tone={SKILL_CONTEXT_META['en-formacion'].tone}
+            />
+            <span>Tecnología en estudio activo o aplicada en la base de este portafolio.</span>
+          </div>
+        </div>
+      </aside>
+
+      <div class="categories-stack">
+        {
+          skillCategories.map((category) => (
+            <SkillCategoryCard category={category} projectTitlesById={projectTitlesById} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legend {
+    margin-bottom: var(--space-8);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .legend__title {
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+  }
+
+  .legend__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+  }
+
+  .legend__items > div {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+
+  .categories-stack {
+    display: grid;
+    gap: var(--space-6);
+  }
+</style>
+
