@@ -62,7 +62,7 @@ export const siteConfig: SiteConfig = {
   },
   availability: {
     isAvailable: true,
-    label: 'Disponible para etapa productiva desde el 11 de diciembre de 2026',
+    label: 'Disponible para etapa productiva desde el 11 de enero de 2027',
     detail:
       'Interesado en vinculación formativa (contrato de aprendizaje / práctica) y roles iniciales de desarrollo web o backend en Colombia o modalidad remota.',
   },
